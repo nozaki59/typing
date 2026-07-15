@@ -101,6 +101,8 @@
   var order = [];
   var waitingInnerHTML = null;
   var curReading = "", curIsSentence = false;
+  var justCompletedSingleN = false; // 「ん」をnひとつで確定した直後だけtrue
+  var pendingExtraN = false; // 「ん」をnn"n"1回で確定した直後、余分なnが来ても無視するためのフラグ
 
   var $ = function (id) { return document.getElementById(id); };
   function show(el) { el.classList.remove("hidden"); }
@@ -213,6 +215,7 @@
     curReading = item.reading;
     curIsSentence = (item.display !== item.reading);
     segs = segment(item.reading); segIndex = 0; buffer = ""; curWordHadMiss = false;
+    justCompletedSingleN = false;
     renderFurigana();
     $("typed").textContent = "";
     $("hint").textContent = "キーボードでローマ字を入力";
@@ -294,11 +297,20 @@
     var test = buffer + ch;
     var res = checkInput(cands, test);
     flashKey(e.key.toUpperCase(), res.match);
+
+    if (!res.match && justCompletedSingleN && ch === "n") {
+      // 「ん」をnひとつで確定した直後に、癖でもう一つnを打ってしまっても無視する
+      justCompletedSingleN = false;
+      return;
+    }
+
     if (res.match) {
+      var wasSingleNComplete = (segs[segIndex].kana === "ん" && test === "n");
       buffer = test; totalTyped++; $("typed").textContent += ch;
       $("charcount").textContent = kanaCharCount;
       if (res.complete) {
         segIndex++; buffer = "";
+        justCompletedSingleN = wasSingleNComplete;
         renderFurigana();
         if (segIndex >= segs.length) {
           var item = toItem(order[qIndex]);
@@ -308,6 +320,8 @@
           $("charcount").textContent = kanaCharCount;
           qIndex++; loadWord();
         }
+      } else {
+        justCompletedSingleN = false;
       }
     } else {
       totalMiss++; curWordHadMiss = true;
