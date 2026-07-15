@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ローマ字入力練習</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <div id="setup" class="card">
+    <div class="setup-title">設定</div>
+    <div class="divider"></div>
+    <div class="field-row tight">
+      <span class="field-label">入力方式</span>
+      <span class="field-value">ローマ字入力</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">制限時間</span>
+      <span id="tlimit-out" class="field-value narrow">3分</span>
+      <input type="range" id="tlimit" class="slider" min="1" max="5" value="3" step="1">
+    </div>
+    <button id="startBtn" class="btn btn-primary">タイピングを開始する</button>
+  </div>
+
+  <div id="waiting" class="card hidden">
+    <div id="waitingInner">
+      <div class="waiting-badge">入力文字数　0</div>
+      <div class="waiting-title">スペースキーを押して開始します。</div>
+      <div class="waiting-sub">（日本語入力モードはOFFにしてください。）</div>
+    </div>
+  </div>
+
+  <div id="play" class="card hidden">
+    <div class="play-header">
+      <span class="play-title">タイピング練習　ローマ字入力</span>
+      <div class="timer-group">
+        <span class="timer-label">残り時間</span>
+        <div class="progress-track">
+          <div id="timebar" class="progress-bar"></div>
+        </div>
+        <span id="timer" class="timer-text">3:00</span>
+        <button id="endBtn" class="btn-end">終了する</button>
+      </div>
+    </div>
+
+    <div class="play-body">
+      <div class="char-badge">
+        入力文字数　<span id="charcount" class="char-count">0</span>
+      </div>
+      <div class="question-area">
+        <div id="kana" class="kana-display">ねこ</div>
+        <div id="furigana" class="furigana-display"></div>
+        <div id="typed" class="typed-display"></div>
+        <div id="hint" class="hint-text">キーボードでローマ字を入力</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="result" class="card hidden">
+    <div class="result-title">成績表</div>
+    <div class="divider"></div>
+    <table class="result-table">
+      <tr class="score-row">
+        <td class="result-label">得　点</td>
+        <td class="result-value"><span id="r-score" class="score-number">0</span> <span class="score-unit">点</span></td>
+      </tr>
+      <tr>
+        <td class="result-label">入力方式/時間</td>
+        <td id="r-mode" class="result-value strong">ローマ字 / 3分</td>
+      </tr>
+      <tr>
+        <td class="result-label">入力文字数</td>
+        <td class="result-value"><span id="r-charcount">0</span> <span class="result-unit">字</span></td>
+      </tr>
+      <tr>
+        <td class="result-label">問題正解率</td>
+        <td class="result-value"><span id="r-qacc">0</span> <span class="result-unit">%</span></td>
+      </tr>
+      <tr>
+        <td class="result-label">正タイプ数</td>
+        <td class="result-value"><span id="r-count">0</span> <span class="result-unit">回</span></td>
+      </tr>
+      <tr>
+        <td class="result-label">誤タイプ数</td>
+        <td class="result-value"><span id="r-miss">0</span> <span class="result-unit">回</span></td>
+      </tr>
+      <tr>
+        <td class="result-label">正タイプ率</td>
+        <td class="result-value"><span id="r-acc">100</span> <span class="result-unit">%</span></td>
+      </tr>
+      <tr>
+        <td class="result-label">誤タイプ率</td>
+        <td class="result-value"><span id="r-missrate">0</span> <span class="result-unit">%</span></td>
+      </tr>
+    </table>
+    <button id="againBtn" class="btn btn-secondary btn-block">リトライ</button>
+  </div>
+
+  <div id="kbwrap" class="hidden">
+    <div id="keyboard"></div>
+  </div>
+
+</div>
+
+<!-- 単語データ・動作ロジックは別ファイルに分離しています。すべて同じフォルダに置いてください。 -->
+<script src="words.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
