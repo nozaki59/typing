@@ -1,22 +1,22 @@
 /*
   ローマ字タイピング練習　単語・短文データファイル
+  index.html / style.css / app.js と同じフォルダに置いてください。
 
-  ここに単語・短文を追加していきます。
-  romaji_typing.html とセットで同じフォルダに置いてください。
+  【書き方】
+    { display: "画面に表示する文字", reading: "読み（ひらがな＋句読点のみ）" },
 
-  【書き方のルール】
-    { display: "画面に表示する文字", reading: "読み仮名（ひらがな＋句読点のみ）" },
+  ・display : 画面に表示される文字。短文は漢字仮名まじりで書けます。
+  ・reading : 入力の判定と文字数に使う読み。必ずひらがな（と「ー」「。」「、」）だけで書きます。
+  ・単語は display と reading を同じにします。
+  ・「。」で終わるものは短文、それ以外は単語として自動で振り分けられます。
 
-  ・display : 画面に表示される文字。漢字仮名混じりの短文もここに書けます。
-  ・reading : 入力判定・文字数カウントに使う「ひらがなの読み」。
-              漢字を含む場合も、ここは必ずひらがな（＋句読点）のみで書いてください。
-              拗音「きゃ」促音「っ」撥音「ん」、句読点「。」「、」もそのまま書けば自動で判定されます。
+  【単語に入れないもの】ローマ字の入力が複雑になる語は、単語には入れません。
+    × 外来語の小さい文字（てぃ・ふぁ・でぃ など）や「ゔ」を含む語（例: すぱげてぃ）
+    × 「ぢ」「づ」を含む語（di / du と打つ必要がある）
+    × 「ん」の後に あ行・や行・な行 が続く語（nn と打つ必要がある。例: こんにちは、きんようび）
+    ※ 拗音（きゃ）、促音（っ）、のばす音（ー）は使ってかまいません。
 
-  単語のときは display と reading が同じ文字列になります。
-  短文のときは display に漢字仮名混じり文、reading にひらがなの読みを書きます。
-
-  ★ 増やしたいときは、この配列にコピー＆ペーストで行を追加するだけでOKです。
-     romaji_typing.html 側はさわる必要はありません。
+  ★ 追加・入れかえはこのファイルだけで完結します。app.js はさわる必要はありません。
 */
 
 var ROMAJI_WORD_BANK = [
@@ -152,7 +152,6 @@ var ROMAJI_WORD_BANK = [
   { display: "けいかん", reading: "けいかん" },
   { display: "かしゅ", reading: "かしゅ" },
   { display: "うんてんしゅ", reading: "うんてんしゅ" },
-  { display: "ぱんやさん", reading: "ぱんやさん" },
   { display: "だいく", reading: "だいく" },
   { display: "のうか", reading: "のうか" },
 
@@ -188,6 +187,15 @@ var ROMAJI_WORD_BANK = [
   { display: "じてんしゃ", reading: "じてんしゃ" },
   { display: "ばす", reading: "ばす" },
   { display: "きしゃ", reading: "きしゃ" },
+
+  { display: "めがね", reading: "めがね" },
+  { display: "すずめ", reading: "すずめ" },
+  { display: "かもめ", reading: "かもめ" },
+  { display: "からす", reading: "からす" },
+  { display: "ほたる", reading: "ほたる" },
+  { display: "たけのこ", reading: "たけのこ" },
+  { display: "みずうみ", reading: "みずうみ" },
+  { display: "とけい", reading: "とけい" },
 
   { display: "猫が鳴いた。", reading: "ねこがないた。" },
   { display: "犬が走る。", reading: "いぬがはしる。" },
@@ -390,7 +398,6 @@ var ROMAJI_WORD_BANK = [
   { display: "かようび", reading: "かようび" },
   { display: "すいようび", reading: "すいようび" },
   { display: "もくようび", reading: "もくようび" },
-  { display: "きんようび", reading: "きんようび" },
   { display: "どようび", reading: "どようび" },
 
   { display: "いちがつ", reading: "いちがつ" },
@@ -548,7 +555,6 @@ var ROMAJI_WORD_BANK = [
 
   { display: "ひとり", reading: "ひとり" },
   { display: "ふたり", reading: "ふたり" },
-  { display: "さんにん", reading: "さんにん" },
   { display: "よにん", reading: "よにん" },
   { display: "ごにん", reading: "ごにん" },
   { display: "ろくにん", reading: "ろくにん" },
@@ -647,8 +653,6 @@ var ROMAJI_WORD_BANK = [
   { display: "ぎたー", reading: "ぎたー" },
   { display: "たんばりん", reading: "たんばりん" },
 
-  { display: "きんいろ", reading: "きんいろ" },
-  { display: "ぎんいろ", reading: "ぎんいろ" },
   { display: "はいいろ", reading: "はいいろ" },
 
   { display: "どうろ", reading: "どうろ" },
@@ -717,16 +721,13 @@ var ROMAJI_WORD_BANK = [
 
   { display: "はんばーがー", reading: "はんばーがー" },
   { display: "ぴざ", reading: "ぴざ" },
-  { display: "すぱげてぃ", reading: "すぱげてぃ" },
   { display: "おむらいす", reading: "おむらいす" },
   { display: "さらだ", reading: "さらだ" },
   { display: "すーぷ", reading: "すーぷ" },
 
   { display: "おはよう", reading: "おはよう" },
-  { display: "こんにちは", reading: "こんにちは" },
   { display: "こんばんは", reading: "こんばんは" },
   { display: "ありがとう", reading: "ありがとう" },
-  { display: "ごめんなさい", reading: "ごめんなさい" },
   { display: "さようなら", reading: "さようなら" },
 
   { display: "カバは大きい。", reading: "かばはおおきい。" },
@@ -800,7 +801,6 @@ var ROMAJI_WORD_BANK = [
   { display: "三人で歌う。", reading: "さんにんでうたう。" },
   { display: "十人が集まる。", reading: "じゅうにんがあつまる。" },
   { display: "百まで数える。", reading: "ひゃくまでかぞえる。" },
-  { display: "千羽鶴を折る。", reading: "せんばづるをおる。" },
   { display: "一万円を払う。", reading: "いちまんえんをはらう。" },
   { display: "日曜日に公園へ行く。", reading: "にちようびにこうえんへいく。" },
   { display: "月曜日に宿題を出す。", reading: "げつようびにしゅくだいをだす。" },
@@ -822,7 +822,6 @@ var ROMAJI_WORD_BANK = [
   { display: "さようならと手を振る。", reading: "さようならとてをふる。" },
   { display: "ハンバーガーを食べる。", reading: "はんばーがーをたべる。" },
   { display: "ピザを注文する。", reading: "ぴざをちゅうもんする。" },
-  { display: "スパゲティをゆでる。", reading: "すぱげてぃをゆでる。" },
   { display: "オムライスを作る。", reading: "おむらいすをつくる。" },
   { display: "サラダを食べる。", reading: "さらだをたべる。" },
   { display: "スープを飲む。", reading: "すーぷをのむ。" },
@@ -852,7 +851,6 @@ var ROMAJI_WORD_BANK = [
   { display: "休息をとる。", reading: "きゅうそくをとる。" },
   { display: "習い事に通う。", reading: "ならいごとにかよう。" },
   { display: "お手伝いをする。", reading: "おてつだいをする。" },
-  { display: "日照りが続く。", reading: "ひでりがつづく。" },
   { display: "小雨が降る。", reading: "こさめがふる。" },
   { display: "大雨に注意する。", reading: "おおあめにちゅういする。" },
   { display: "大雪で休校になる。", reading: "おおゆきできゅうこうになる。" },
@@ -895,5 +893,8 @@ var ROMAJI_WORD_BANK = [
   { display: "遊園地で遊ぶ。", reading: "ゆうえんちであそぶ。" },
   { display: "動物園に行く。", reading: "どうぶつえんにいく。" },
   { display: "水族館で魚を見る。", reading: "すいぞくかんでさかなをみる。" },
-  { display: "博物館を見学する。", reading: "はくぶつかんをけんがくする。" }
+  { display: "博物館を見学する。", reading: "はくぶつかんをけんがくする。" },
+  { display: "眼鏡をかける。", reading: "めがねをかける。" },
+  { display: "すずめが鳴く。", reading: "すずめがなく。" },
+  { display: "ほたるが光る。", reading: "ほたるがひかる。" }
 ];

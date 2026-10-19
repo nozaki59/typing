@@ -133,6 +133,7 @@ body {
   letter-spacing: 3px;
   min-height: 26px;
 }
+.hint-text.hint-warn { color: #e07a1f; font-weight: 600; }
 .furigana-typed { color: #2f80c9; font-weight: 600; }
 .furigana-rest { color: #9a9a9a; }
 .typed-display {
