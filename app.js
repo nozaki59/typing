@@ -205,7 +205,7 @@ if (typeof window !== "undefined") { window.RomajiEngine = RomajiEngine; }
   var wordsOnly = wordBank.filter(function (w) { return !isSentence(w); });
   var sentencesOnly = wordBank.filter(isSentence);
 
-  var HINT_DEFAULT = "キーボードでローマ字を入力";
+  var HINT_DEFAULT = "";
   var HINT_IME = "日本語入力がONになっています。「半角/全角」キーでOFFにしてね";
 
   // ===== 状態 =====
@@ -219,75 +219,64 @@ if (typeof window !== "undefined") { window.RomajiEngine = RomajiEngine; }
   function show(el) { el.classList.remove("hidden"); }
   function hide(el) { el.classList.add("hidden"); }
   function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function fmtTime(sec) { var m = Math.floor(sec / 60), s = sec % 60; return m + ":" + (s < 10 ? "0" : "") + s; }
+  // 残り時間を「4分59秒」の形で表示する
+  function renderTimer(sec) {
+    var m = Math.floor(sec / 60), s = sec % 60;
+    $("timer").innerHTML = "<b>" + m + "</b><small>分</small><b>" + (s < 10 ? "0" : "") + s + "</b><small>秒</small>";
+  }
   function toItem(x) { return (typeof x === "string") ? { display: x, reading: x } : x; }
   function countKana(s) { return s.replace(/[。、！？]/g, "").length; } // 句読点は文字数に数えない
 
-  // ===== キーボード表示（指の色分け。文字キー以外は無地） =====
-  var fingerColors = { L5: "#5b9bd5", L4: "#3fa889", L3: "#c99a3e", L2: "#d17ba0", R2: "#9a8fe0", R3: "#c99a3e", R4: "#3fa889", R5: "#5b9bd5" };
+  // ===== キーボード表示 =====
+  // キーの下の縁を「担当する指」の色にして、どの指で打つかがわかるようにする
+  var fingerColors = { L5: "#6fa8dc", L4: "#57b894", L3: "#d4a94e", L2: "#de8bb0", R2: "#a79be6", R3: "#d4a94e", R4: "#57b894", R5: "#6fa8dc" };
   var keyFinger = {
     "1":"L5","2":"L4","3":"L3","4":"L2","5":"L2","6":"R2","7":"R2","8":"R3","9":"R4","0":"R5","-":"R5","^":"R5","¥":"R5",
     "Q":"L5","W":"L4","E":"L3","R":"L2","T":"L2","Y":"R2","U":"R2","I":"R3","O":"R4","P":"R5","@":"R5","[":"R5",
     "A":"L5","S":"L4","D":"L3","F":"L2","G":"L2","H":"R2","J":"R2","K":"R3","L":"R4",";":"R5",":":"R5","]":"R5",
     "Z":"L5","X":"L4","C":"L3","V":"L2","B":"L2","N":"R2","M":"R2",",":"R3",".":"R4","/":"R5","\\":"R5"
   };
+  var HOME_KEYS = "ASDFJKL", BUMP_KEYS = "FJ";
+  var spaceKey = null;
 
-  function makeKey(label, width, isHome, displayLabel) {
-    var f = keyFinger[label];
-    var col = f ? fingerColors[f] : "#b9b6ac";
+  // JIS配列を 0.25キー単位のグリッドに並べる。[表示, 幅(キー数)] の並び。表示が "" のキーは無地
+  var LAYOUT = [
+    [["", 1], ["1"], ["2"], ["3"], ["4"], ["5"], ["6"], ["7"], ["8"], ["9"], ["0"], ["-"], ["^"], ["¥"], ["", 1]],
+    [["", 1.5], ["Q"], ["W"], ["E"], ["R"], ["T"], ["Y"], ["U"], ["I"], ["O"], ["P"], ["@"], ["["]],
+    [["", 1.75], ["A"], ["S"], ["D"], ["F"], ["G"], ["H"], ["J"], ["K"], ["L"], [";"], [":"], ["]"]],
+    [["Shift", 2.25], ["Z"], ["X"], ["C"], ["V"], ["B"], ["N"], ["M"], [","], ["."], ["/"], ["\\"], ["Shift", 1.75]],
+    [["", 1.5], ["", 1], ["", 1], ["", 1.25], ["Space", 4.25], ["", 1.25], ["", 1.25], ["", 1], ["", 1], ["", 1.5]]
+  ];
+
+  function addKey(kb, label, w, row, col, rowSpan) {
     var key = document.createElement("div");
-    key.className = "key" + (isHome ? " key--home" : "");
-    key.style.width = width + "px";
-
-    var inner = document.createElement("div");
-    inner.className = "key-inner";
-    var shown = displayLabel === undefined ? label : displayLabel;
-    inner.textContent = shown;
-    inner.style.fontSize = shown.length > 2 ? "11px" : "16px";
-    key.appendChild(inner);
-
-    var bar = document.createElement("div");
-    bar.className = "key-bar";
-    bar.style.background = col;
-    bar.style.opacity = f ? "0.85" : "0.25";
-    key.appendChild(bar);
-
-    if (isHome) { key.style.boxShadow = "0 1.5px 0 rgba(0,0,0,0.08), inset 0 0 0 1.5px " + col; }
-    if (f) { keyElements[label] = key; }
-    return key;
+    var f = keyFinger[label];
+    key.className = "key";
+    key.style.gridRow = (row + 1) + " / span " + (rowSpan || 1);
+    key.style.gridColumn = (Math.round(col * 4) + 1) + " / span " + Math.round(w * 4);
+    if (f) {
+      key.textContent = label;
+      key.style.borderBottomColor = fingerColors[f];
+      if (HOME_KEYS.indexOf(label) >= 0) key.classList.add("key--home");
+      if (BUMP_KEYS.indexOf(label) >= 0) key.classList.add("key--bump");
+      keyElements[label] = key;
+    } else if (label === "Shift") {
+      key.textContent = "Shift"; key.classList.add("key--label");
+    }
+    if (label === "Space") spaceKey = key;
+    kb.appendChild(key);
   }
 
   function buildKeyboard() {
     var kb = $("keyboard");
-    var homeKeys = ["A", "S", "D", "F", "J", "K", "L"];
-    var W = 38;
-    function row(cls) { var r = document.createElement("div"); r.className = "kb-row" + (cls ? " " + cls : ""); kb.appendChild(r); return r; }
-
-    var r0 = row();
-    ["1","2","3","4","5","6","7","8","9","0","-","^","¥"].forEach(function (k) { r0.appendChild(makeKey(k, W, false)); });
-    r0.appendChild(makeKey("BS", 66, false, ""));
-
-    var r1 = row("kb-row--top");
-    r1.appendChild(makeKey("Tab", 52, false, ""));
-    ["Q","W","E","R","T","Y","U","I","O","P","@","["].forEach(function (k) { r1.appendChild(makeKey(k, W, false)); });
-
-    var r2 = row("kb-row--home");
-    r2.appendChild(makeKey("Caps", 59, false, ""));
-    ["A","S","D","F","G","H","J","K","L",";",":","]"].forEach(function (k) { r2.appendChild(makeKey(k, W, homeKeys.indexOf(k) >= 0)); });
-    r2.appendChild(makeKey("Enter", 59, false, ""));
-
-    var r3 = row("kb-row--bottom");
-    r3.appendChild(makeKey("Shift", 73, false, "Shift"));
-    ["Z","X","C","V","B","N","M",",",".","/","\\"].forEach(function (k) { r3.appendChild(makeKey(k, W, false)); });
-    r3.appendChild(makeKey("Shift", 59, false, "Shift"));
-
-    var r4 = row();
-    ["Ctrl","Win","Alt","無変換"].forEach(function (k) { r4.appendChild(makeKey(k, k === "無変換" ? 52 : 45, false, "")); });
-    r4.appendChild(makeKey("Space", 212, false, ""));
-    ["変換","かな","Alt","Menu","Ctrl"].forEach(function (k) { r4.appendChild(makeKey(k, k.length > 2 ? 52 : 45, false, "")); });
+    LAYOUT.forEach(function (keys, row) {
+      var col = 0;
+      keys.forEach(function (k) { var w = k[1] || 1; addKey(kb, k[0], w, row, col); col += w; });
+    });
+    addKey(kb, "Enter", 1.25, 1, 13.75, 2); // Enter は2段ぶんの高さ
   }
 
-  // 押したキーを光らせる（正しい入力は緑、間違いは青）
+  // 押したキーを光らせる（正しい入力は水色、間違いは薄いオレンジ）
   function flashKey(label, success) {
     var el = keyElements[label];
     if (!el) return;
@@ -295,7 +284,14 @@ if (typeof window !== "undefined") { window.RomajiEngine = RomajiEngine; }
     void el.offsetWidth;
     el.classList.add(success ? "key--success" : "key--flash");
     clearTimeout(el._flashTimer);
-    el._flashTimer = setTimeout(function () { el.classList.remove("key--flash", "key--success"); }, success ? 320 : 180);
+    el._flashTimer = setTimeout(function () { el.classList.remove("key--flash", "key--success"); }, success ? 260 : 200);
+  }
+
+  // スライダーの左側（選んだ時間まで）をオレンジにする
+  function paintSlider() {
+    var s = $("tlimit");
+    s.style.setProperty("--p", ((s.value - s.min) / (s.max - s.min) * 100) + "%");
+    $("tlimit-out").textContent = s.value + "分";
   }
 
   // 短文のふりがなは、入力し終えた部分だけ色を変える
@@ -327,11 +323,13 @@ if (typeof window !== "undefined") { window.RomajiEngine = RomajiEngine; }
     else { $("waitingInner").innerHTML = waitingInnerHTML; }
     show($("waiting"));
     show($("kbwrap"));
+    if (spaceKey) spaceKey.classList.add("key--cue");
     waitingStart = true;
   }
 
   function beginCountdown() {
     waitingStart = false; counting = true;
+    if (spaceKey) spaceKey.classList.remove("key--cue");
     var count = 3;
     $("waitingInner").innerHTML = '<div id="cdnum" class="countdown-number">' + count + "</div>";
     var cd = setInterval(function () {
@@ -348,14 +346,14 @@ if (typeof window !== "undefined") { window.RomajiEngine = RomajiEngine; }
       .concat(shuffle(wordsOnly.slice()).slice(0, WORD_COUNT))
       .concat(shuffle(sentencesOnly.slice()));
     hide($("waiting")); show($("play"));
-    $("timer").textContent = fmtTime(timeLeft);
+    renderTimer(timeLeft);
     $("timebar").style.width = "100%"; $("timebar").style.background = "#6fcf97";
     $("charcount").textContent = "0";
     $("hint").textContent = HINT_DEFAULT; $("hint").classList.remove("hint-warn");
     loadWord(false);
     timerId = setInterval(function () {
       timeLeft--;
-      $("timer").textContent = fmtTime(timeLeft);
+      renderTimer(timeLeft);
       var pct = Math.max(0, (timeLeft / timeLimit) * 100);
       $("timebar").style.width = pct + "%";
       $("timebar").style.background = pct < 20 ? "#eb5757" : (pct < 50 ? "#f2c94c" : "#6fcf97");
@@ -421,7 +419,8 @@ if (typeof window !== "undefined") { window.RomajiEngine = RomajiEngine; }
 
   // ===== 初期化 =====
   document.addEventListener("DOMContentLoaded", function () {
-    $("tlimit").addEventListener("input", function () { $("tlimit-out").textContent = this.value + "分"; });
+    $("tlimit").addEventListener("input", paintSlider);
+    paintSlider();
     document.addEventListener("keydown", onKey);
     $("startBtn").addEventListener("click", goToWaiting);
     $("endBtn").addEventListener("click", finish);
