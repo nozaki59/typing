@@ -366,8 +366,10 @@ if (typeof window !== "undefined") { window.RomajiEngine = RomajiEngine; }
     running = false; clearInterval(timerId);
     hide($("play")); show($("result"));
     hide($("kbwrap"));
-    var accRate = totalTyped + totalMiss > 0 ? Math.round(totalTyped / (totalTyped + totalMiss) * 100) : 100;
-    $("r-score").textContent = Math.floor((kanaCharCount / 750) * 100);
+    // 1回も打っていないときは正タイプ率0%（誤タイプ率100%）とする
+    var accRate = totalTyped + totalMiss > 0 ? Math.round(totalTyped / (totalTyped + totalMiss) * 100) : 0;
+    // 得点は「入力文字数÷750×100」（小数点以下切り捨て）で、100点満点
+    $("r-score").textContent = Math.min(100, Math.floor((kanaCharCount / 750) * 100));
     $("r-mode").textContent = "ローマ字 / " + (timeLimit / 60) + "分";
     $("r-charcount").textContent = kanaCharCount;
     $("r-count").textContent = totalTyped;
