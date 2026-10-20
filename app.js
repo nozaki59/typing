@@ -370,7 +370,6 @@ if (typeof window !== "undefined") { window.RomajiEngine = RomajiEngine; }
     $("r-score").textContent = Math.floor((kanaCharCount / 750) * 100);
     $("r-mode").textContent = "ローマ字 / " + (timeLimit / 60) + "分";
     $("r-charcount").textContent = kanaCharCount;
-    $("r-qacc").textContent = wordsCompleted > 0 ? Math.round(((wordsCompleted - wordsWithMiss) / wordsCompleted) * 100) : 100;
     $("r-count").textContent = totalTyped;
     $("r-miss").textContent = totalMiss;
     $("r-acc").textContent = accRate;

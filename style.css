@@ -107,20 +107,29 @@ p { margin: 0; }
   width: 1px; height: 8px; background: #aeb3ba;
 }
 
-/* ===== 成績表 ===== */
-.result-table { border-collapse: collapse; min-width: 380px; }
-.result-table th, .result-table td { padding: 12px 6px; border-bottom: 1px solid #e7e9ec; }
-.result-table th {
-  text-align: left; font-weight: 400; color: var(--blue-label);
-  font-size: 19px; letter-spacing: 0.32em; white-space: nowrap; padding-right: 40px;
+/* ===== 成績表 =====
+   項目名は均等割り付け、数値はオレンジ、単位はグレーの3列 */
+.result-table { border-collapse: collapse; }
+.result-table th, .result-table td {
+  padding: 13px 0 11px; border-bottom: 1px solid #dcdfe3;
+  font-weight: 400; vertical-align: baseline; white-space: nowrap;
 }
-.result-table td { text-align: right; white-space: nowrap; }
-.result-num { color: var(--orange); font-size: 24px; font-family: var(--mono-font); }
-.result-unit { color: var(--orange); font-size: 15px; margin-left: 8px; display: inline-block; min-width: 1.2em; text-align: left; }
-.result-mode { color: var(--orange); font-size: 19px; font-weight: 700; letter-spacing: 0.08em; }
-.score-row th { font-size: 30px; letter-spacing: 1.2em; padding-top: 6px; padding-bottom: 14px; }
-.score-row .result-num { font-size: 40px; }
-.score-row .result-unit { font-size: 17px; }
+.result-table th { padding-left: 34px; padding-right: 30px; text-align: left; }
+.result-label {
+  display: inline-block; width: 150px;
+  text-align: justify; text-align-last: justify; text-justify: inter-character;
+  color: var(--blue-label); font-size: 21px;
+}
+.result-value {
+  min-width: 190px; text-align: right;
+  color: var(--orange); font-size: 24px; font-variant-numeric: tabular-nums;
+}
+.result-mode { font-size: 21px; letter-spacing: 0.1em; }
+.result-unit { width: 74px; padding-right: 26px !important; text-align: right; color: #6b6f75; font-size: 20px; }
+.score-row th, .score-row td { padding-top: 4px; padding-bottom: 10px; }
+.score-row .result-label { font-size: 34px; }
+.score-row .result-value { font-size: 40px; }
+.score-row .result-unit { font-size: 22px; }
 
 /* ===== プレイ中のヘッダー（画面の端から端まで） ===== */
 .play-header {
